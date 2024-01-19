@@ -1,10 +1,8 @@
 package com.manish.nalandametro.graph
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapPoint
 import com.google.common.truth.Truth.assertThat
-import com.manish.nalandametro.data.model.GraphData
-import com.manish.nalandametro.data.model.Route
 import com.manish.nalandametro.data.model.Station
 import com.manish.nalandametro.utils.Resource
 import org.junit.Rule
@@ -29,19 +27,19 @@ class MetroGraphTest() {
         val st1 = Station(
             mutableMapOf(),
             "S1",
-            LatLng(25.027308, 85.528208),
+            MapPoint(25.027308, 85.528208),
             UUID.randomUUID().toString()
         )
         val st2 = Station(
             mutableMapOf(),
             "S2",
-            LatLng(25.028308, 85.528208),
+            MapPoint(25.028308, 85.528208),
             UUID.randomUUID().toString()
         )
         val st3 = Station(
             mutableMapOf(),
             "S3",
-            LatLng(25.029308, 85.528208),
+            MapPoint(25.029308, 85.528208),
             UUID.randomUUID().toString()
         )
 

@@ -1,6 +1,5 @@
 package com.manish.nalandametro.data.repository
 
-import com.manish.nalandametro.data.model.GraphData
 import com.manish.nalandametro.data.model.Route
 import com.manish.nalandametro.data.model.Station
 import com.manish.nalandametro.utils.Resource

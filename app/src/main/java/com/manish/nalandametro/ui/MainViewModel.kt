@@ -4,9 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.maps.model.LatLng
 import com.manish.nalandametro.data.model.GraphData
-import com.manish.nalandametro.data.model.Station
+import com.manish.nalandametro.data.model.MapPoint
 import com.manish.nalandametro.data.repository.Repository
 import com.manish.nalandametro.graph.CalculatedPath
 import com.manish.nalandametro.graph.Graph
@@ -16,8 +15,8 @@ import com.manish.nalandametro.utils.CustomEvent
 import com.manish.nalandametro.utils.Event
 import com.manish.nalandametro.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,6 +32,9 @@ class MainViewModel @Inject constructor(val repository: Repository) : ViewModel(
     private val _getPathWithLowestStops = MutableLiveData<Event<Resource<CalculatedPath>>>()
     fun getPathWithLowestStopsResult() =
         _getPathWithLowestStops as LiveData<Event<Resource<CalculatedPath>>>
+
+    private val _filterStationsResult = MutableLiveData<Event<List<String>>>()
+    fun getFilterStationResult() = _filterStationsResult as LiveData<Event<List<String>>>
 
     fun updateWithCustomDataResult() = repository.updateGraphDataResult()
     fun updateWithTestData() {
@@ -97,4 +99,18 @@ class MainViewModel @Inject constructor(val repository: Repository) : ViewModel(
 
     fun getCurrStationsCount() = metroGraph?.getAvailableStationsCount()
     fun getCurrStationsList() = metroGraph?.getStationsNamesList()
+
+    fun filterStations(query: String, withDelay: Boolean, limitToTop: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (withDelay)
+                Thread.sleep(500)
+
+            val result = metroGraph?.filterCities(query, limitToTop) ?: emptyList()
+            _filterStationsResult.postValue(Event(result))
+        }
+    }
+
+    fun getStationLocation(station: String): MapPoint? {
+        return metroGraph?.getStationLocation(station)
+    }
 }

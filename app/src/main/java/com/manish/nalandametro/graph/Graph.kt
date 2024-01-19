@@ -1,16 +1,16 @@
 package com.manish.nalandametro.graph
 
-import com.google.android.gms.maps.model.LatLng
 import com.manish.nalandametro.data.model.GraphData
+import com.manish.nalandametro.data.model.MapPoint
 import com.manish.nalandametro.data.model.Station
 import com.manish.nalandametro.utils.Resource
 
 interface Graph {
-    fun setGraphData(graphData: GraphData)
-    fun addStation(name: String, stationId: String, latLng: LatLng)
+    fun setGraphData(data: GraphData)
+    fun addStation(name: String, stationId: String, mapPoint: MapPoint)
     fun containsStation(name: String): Boolean
-    fun getStationLocation(name:String):LatLng?
-    fun addRoute(from: String, to: String, distance: Float, cost: Int): Boolean
+    fun getStationLocation(name: String): MapPoint?
+    fun addRoute(from: String, to: String, distance: Double, cost: Int): Boolean
 
     fun getRoute(
         from: String,
@@ -20,5 +20,9 @@ interface Graph {
 
     fun getAvailableStationsCount(): Int
     fun getGraphData(): GraphData
-    fun getStationsNamesList():List<String>
+    fun getStationsNamesList(): List<String>
+
+    fun getNearestStations(from: String, count: Int): List<String>
+
+    fun filterCities(query: String, limitToTop: Int): List<String>
 }

@@ -1,53 +1,54 @@
 package com.manish.nalandametro.graph
 
-import com.google.android.gms.maps.model.LatLng
 import com.manish.nalandametro.data.model.GraphData
+import com.manish.nalandametro.data.model.MapPoint
 import com.manish.nalandametro.data.model.Route
 import com.manish.nalandametro.data.model.Station
 import com.manish.nalandametro.utils.Resource
 import com.manish.nalandametro.utils.Utils
+import com.manish.nalandametro.utils.Utils.distance
 import java.util.PriorityQueue
 
-class MetroGraph(private var graphData: GraphData) : Graph {
+class MetroGraph(private var data: GraphData) : Graph {
+    private var citySearchManager: CitySearchManager? = null
+
     data class Node(
         val dest: String,
-        val distance: Float,
+        val distance: Double,
         val cost: Int,
         val stops: Int
     )
 
-    override fun setGraphData(graphData: GraphData) {
-        this.graphData = graphData
+    override fun setGraphData(data: GraphData) {
+        this.data = data
     }
 
-    override fun addStation(name: String, stationId: String, latLng: LatLng) {
-        if (graphData.map == null)
-            return
+    override fun addStation(name: String, stationId: String, mapPoint: MapPoint) {
+        val map = data.map
 
-        if (graphData.map!!.containsKey(name)) {
-            val station = graphData.map!![name]!!
+        if (map.containsKey(name)) {
+            val station = map[name]!!
             station.stationId = stationId
-            station.latLng = latLng
+            station.mapPoint = mapPoint
         } else {
-            graphData.map!![name] =
-                Station(mutableMapOf(), stationId, latLng, Utils.randomStringId())
+            map[name] =
+                Station(mutableMapOf(), stationId, mapPoint, Utils.randomStringId())
         }
     }
 
-    override fun containsStation(name: String) = graphData.map?.containsKey(name)!!
-    override fun getStationLocation(name: String): LatLng? {
-        if (!graphData.map?.containsKey(name)!!)
-            return null
-
-        return graphData.map!![name]?.latLng
+    override fun containsStation(name: String) = data.map.containsKey(name)
+    override fun getStationLocation(name: String): MapPoint? {
+        return data.map[name]?.mapPoint
     }
 
-    override fun addRoute(from: String, to: String, distance: Float, cost: Int): Boolean {
-        if (!graphData.map?.containsKey(from)!! || !graphData.map?.containsKey(to)!! || from == to)
+    override fun addRoute(from: String, to: String, distance: Double, cost: Int): Boolean {
+        val map = data.map
+
+        if (!map.containsKey(from) || !map.containsKey(to) || from == to)
             return false
 
-        val station1 = graphData.map!![from]!!
-        val station2 = graphData.map!![to]!!
+        val station1 = map[from]!!
+        val station2 = map[to]!!
 
         station1.routes?.set(to, Route(Utils.randomStringId(), cost, distance))
         station2.routes?.set(from, Route(Utils.randomStringId(), cost, distance))
@@ -60,9 +61,11 @@ class MetroGraph(private var graphData: GraphData) : Graph {
         to: String,
         pathType: PathType
     ): Resource<CalculatedPath> {
-        if (!graphData.map?.containsKey(from)!!)
+        val map = data.map
+
+        if (!map.containsKey(from))
             return Resource.error(null, "Station not found: $from")
-        if (!graphData.map?.containsKey(to)!!)
+        if (!map.containsKey(to))
             return Resource.error(null, "Station not found: $to")
         if (from == to)
             return Resource.error(null, "Start station can not be end station!")
@@ -108,17 +111,19 @@ class MetroGraph(private var graphData: GraphData) : Graph {
         pathType: PathType,
         comparator: Comparator<Node>
     ): CalculatedPath? {
+        val map = data.map
+
         val path = mutableListOf<String>()
 
         val visited = mutableMapOf<String, Int>()
         val queue = PriorityQueue(comparator)
 
-        for (pair in graphData.map!!) {
+        for (pair in map) {
             visited[pair.key] = Int.MAX_VALUE
         }
 
         visited[from] = 0
-        queue.add(Node(from, 0f, 0, 0))
+        queue.add(Node(from, 0.0, 0, 0))
 
         while (!queue.isEmpty()) {
             val curr = queue.poll() ?: continue
@@ -140,7 +145,7 @@ class MetroGraph(private var graphData: GraphData) : Graph {
             visited.remove(curr.dest)
             path.add(curr.dest)
 
-            val routes = graphData.map!![curr.dest]?.routes ?: continue
+            val routes = map[curr.dest]?.routes ?: continue
 
             for (r in routes) {
                 val oldCost = visited.getOrDefault(r.key, 0)
@@ -163,15 +168,48 @@ class MetroGraph(private var graphData: GraphData) : Graph {
     }
 
     override fun getAvailableStationsCount(): Int {
-        return graphData.map?.size ?: 0
+        return data.map.size
     }
 
     override fun getGraphData(): GraphData {
-        return graphData
+        return data
     }
 
     override fun getStationsNamesList(): List<String> {
-        return graphData.map?.keys?.toList() ?: emptyList()
+        return data.map.keys.toList()
+    }
+
+    override fun getNearestStations(from: String, count: Int): List<String> {
+        data class Node(val name: String, val dist: Double)
+
+        val point1 = data.map[from]?.mapPoint ?: return emptyList()
+        val queue = PriorityQueue(count, object : Comparator<Node> {
+            override fun compare(o1: Node, o2: Node): Int {
+                if (o2.dist < o1.dist)
+                    return -1
+                return 1
+            }
+        })
+
+        data.map.forEach {
+            if (it.key != from) {
+                val point2 = it.value.mapPoint
+                if (point2 != null) {
+                    queue.add(Node(it.key, point1.distance(point2)))
+                    if (queue.size > count)
+                        queue.poll()
+                }
+            }
+        }
+
+        return queue.toList().reversed().map { it.name }
+    }
+
+    override fun filterCities(query: String, limitToTop: Int): List<String> {
+        if (citySearchManager == null)
+            citySearchManager = CitySearchManager(data.map.keys.toList())
+
+        return citySearchManager?.filterCities(query, limitToTop) ?: emptyList()
     }
 
     enum class PathType {

@@ -24,10 +24,10 @@
         android:id="@+id/fab_focus_location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
         android:backgroundTint="@color/white"
         android:clickable="true"
         android:focusable="true"
-        android:layout_marginBottom="16dp"
         app:backgroundTint="@color/main_app_color"
         app:layout_constraintBottom_toTopOf="@+id/fab_new_journy"
         app:layout_constraintEnd_toEndOf="@+id/fab_new_journy"
@@ -35,10 +35,82 @@
         app:tint="@color/black" />
 
     <org.osmdroid.views.MapView
-        android:id="@+id/mapview"
+        android:id="@+id/mapView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
     </org.osmdroid.views.MapView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="12dp"
+        app:cardBackgroundColor="@color/toolbar_bg"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="6dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <RelativeLayout
+            android:id="@+id/main_toolbar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/title_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="15dp"
+                android:text="Nalanda Metro"
+                android:textColor="@color/black"
+                android:textSize="21sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/search_btn"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="12dp"
+                android:padding="3dp"
+                android:src="@drawable/search_ic_black" />
+
+        </RelativeLayout>
+
+        <SearchView
+            android:id="@+id/search_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:iconifiedByDefault="false"
+            android:paddingHorizontal="2dp"
+            android:queryHint="Enter city name..."
+            android:searchHintIcon="@null"
+            android:searchIcon="@null"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@+id/toolbar_layout"
+            app:layout_constraintEnd_toEndOf="@+id/toolbar_layout"
+            app:layout_constraintStart_toStartOf="@+id/toolbar_layout"
+            app:layout_constraintTop_toTopOf="@+id/toolbar_layout" />
+
+    </androidx.cardview.widget.CardView>
+
+    <ListView
+        android:id="@+id/list_view"
+        android:layout_width="0dp"
+        android:elevation="6dp"
+        android:layout_marginTop="3dp"
+        android:background="@color/toolbar_bg"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@id/cardView"
+        app:layout_constraintStart_toStartOf="@id/cardView"
+        app:layout_constraintTop_toBottomOf="@id/cardView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

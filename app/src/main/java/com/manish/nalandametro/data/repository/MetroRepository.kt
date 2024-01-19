@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.firestore.FirebaseFirestore
 import com.manish.nalandametro.data.model.GraphData
-import com.manish.nalandametro.data.model.Route
 import com.manish.nalandametro.data.model.Station
 import com.manish.nalandametro.utils.Resource
 
