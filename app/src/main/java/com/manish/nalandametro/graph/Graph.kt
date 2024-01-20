@@ -25,4 +25,6 @@ interface Graph {
     fun getNearestStations(from: String, count: Int): List<String>
 
     fun filterCities(query: String, limitToTop: Int): List<String>
+
+    fun getStationSymbol(station:String):String?
 }

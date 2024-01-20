@@ -1,5 +1,6 @@
 package com.manish.nalandametro.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -14,7 +15,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.manish.nalandametro.BuildConfig
 import com.manish.nalandametro.R
 import com.manish.nalandametro.data.model.GraphData
-import com.manish.nalandametro.data.model.MapPoint
 import com.manish.nalandametro.data.pref.PrefManager
 import com.manish.nalandametro.databinding.ActivityMainBinding
 import com.manish.nalandametro.utils.Resource
@@ -26,7 +26,6 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.ItemizedIconOverlay.OnItemGestureListener
 import org.osmdroid.views.overlay.ItemizedOverlayWithFocus
-import org.osmdroid.views.overlay.Overlay
 import org.osmdroid.views.overlay.OverlayItem
 import org.osmdroid.views.overlay.Polyline
 import javax.inject.Inject
@@ -60,7 +59,7 @@ class MainActivity : AppCompatActivity() {
             if (it.status == Resource.Status.SUCCESS && it.data != null) {
                 viewModel.setUpGraph(it.data)
                 refreshMapItems(viewModel.getCurrGraphData())
-            } else if (it.status == Resource.Status.FAILED) {
+            } else if (it.status == Resource.Status.ERROR) {
                 Toast.makeText(this@MainActivity, it.msg, Toast.LENGTH_SHORT)
                     .show()
             }
@@ -112,6 +111,21 @@ class MainActivity : AppCompatActivity() {
         viewModel.getFilterStationResult().observe(this) { event ->
             setUpSearchListView(event.getContentIfNotHandled())
         }
+
+        //New Journey
+        binding.fabNewJourny.setOnClickListener {
+            val data = viewModel.getCurrGraphData()
+
+            if (data == null) {
+                Toast.makeText(this, "Please wait! loading data...", Toast.LENGTH_SHORT)
+                    .show()
+                return@setOnClickListener
+            }
+
+            val intent = Intent(this, JourneyActivity::class.java)
+            intent.putExtra("graph_data", data)
+            startActivity(intent)
+        }
     }
 
     private fun setUpSearchListView(list: List<String>?) {
@@ -119,14 +133,15 @@ class MainActivity : AppCompatActivity() {
 
         if (list.isNullOrEmpty()) {
             binding.listView.adapter = null
+            binding.listView.visibility = View.GONE
             return
         }
 
         val adapter =
             ArrayAdapter(this@MainActivity, android.R.layout.simple_list_item_1, list)
 
+        binding.listView.visibility = View.VISIBLE
         binding.listView.adapter = adapter
-
         binding.listView.onItemClickListener = object : OnItemClickListener {
             override fun onItemClick(
                 parent: AdapterView<*>?,

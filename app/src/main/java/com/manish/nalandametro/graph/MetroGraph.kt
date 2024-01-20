@@ -16,7 +16,8 @@ class MetroGraph(private var data: GraphData) : Graph {
         val dest: String,
         val distance: Double,
         val cost: Int,
-        val stops: Int
+        val stops: Int,
+        val prev: Node? = null
     )
 
     override fun setGraphData(data: GraphData) {
@@ -83,7 +84,7 @@ class MetroGraph(private var data: GraphData) : Graph {
                 from,
                 to,
                 pathType,
-                Comparator.comparingDouble { n -> n.distance.toDouble() })
+                Comparator.comparingDouble { n -> n.distance })
                 ?: return Resource.error(null, "Station $from and $to is not connected")
             return Resource.success(path)
         }
@@ -113,8 +114,6 @@ class MetroGraph(private var data: GraphData) : Graph {
     ): CalculatedPath? {
         val map = data.map
 
-        val path = mutableListOf<String>()
-
         val visited = mutableMapOf<String, Int>()
         val queue = PriorityQueue(comparator)
 
@@ -129,10 +128,16 @@ class MetroGraph(private var data: GraphData) : Graph {
             val curr = queue.poll() ?: continue
 
             if (curr.dest == to) {
-                path.add(to)
+                val pathList = mutableListOf<String>()
+                var p: Node? = curr
+                while (p != null) {
+                    pathList.add(p.dest)
+                    p = p.prev
+                }
+
                 return CalculatedPath(
                     pathType,
-                    path,
+                    pathList.reversed(),
                     curr.distance,
                     curr.cost,
                     curr.stops
@@ -143,7 +148,6 @@ class MetroGraph(private var data: GraphData) : Graph {
                 continue
 
             visited.remove(curr.dest)
-            path.add(curr.dest)
 
             val routes = map[curr.dest]?.routes ?: continue
 
@@ -158,7 +162,8 @@ class MetroGraph(private var data: GraphData) : Graph {
                         r.key,
                         curr.distance + route.distance!!,
                         curr.cost + route.cost!!,
-                        curr.stops + 1
+                        curr.stops + 1,
+                        curr
                     )
                 )
             }
@@ -210,6 +215,10 @@ class MetroGraph(private var data: GraphData) : Graph {
             citySearchManager = CitySearchManager(data.map.keys.toList())
 
         return citySearchManager?.filterCities(query, limitToTop) ?: emptyList()
+    }
+
+    override fun getStationSymbol(station: String): String? {
+        return data.map[station]?.stationId
     }
 
     enum class PathType {

@@ -56,7 +56,7 @@ class MetroGraphTest() {
         val graph = MetroGraph(graphData)
 
         val result = graph.getRoutes("", "St2", MetroGraph.PathType.CHEAPEST_PATH)
-        assertThat(result.status).isEqualTo(Resource.Status.FAILED)
+        assertThat(result.status).isEqualTo(Resource.Status.ERROR)
     }
 
     @Test
@@ -65,7 +65,7 @@ class MetroGraphTest() {
         val graph = MetroGraph(graphData)
 
         val result = graph.getRoutes("St1", "St2", MetroGraph.PathType.CHEAPEST_PATH)
-        assertThat(result.status).isEqualTo(Resource.Status.FAILED)
+        assertThat(result.status).isEqualTo(Resource.Status.ERROR)
     }
 
     @Test
@@ -74,7 +74,7 @@ class MetroGraphTest() {
         val graph = MetroGraph(graphData)
 
         val result = graph.getRoutes("St1", "", MetroGraph.PathType.CHEAPEST_PATH)
-        assertThat(result.status).isEqualTo(Resource.Status.FAILED)
+        assertThat(result.status).isEqualTo(Resource.Status.ERROR)
     }
 
     @Test
@@ -83,6 +83,6 @@ class MetroGraphTest() {
         val graph = MetroGraph(graphData)
 
         val result = graph.getRoutes("St1", "St2", MetroGraph.PathType.CHEAPEST_PATH)
-        assertThat(result.status).isEqualTo(Resource.Status.FAILED)
+        assertThat(result.status).isEqualTo(Resource.Status.ERROR)
     }
 }

@@ -15,13 +15,13 @@ class Resource<out T> private constructor(
         }
 
         fun <T> error(data: T?, msg: String): Resource<T> {
-            return Resource(Status.FAILED, data, null)
+            return Resource(Status.ERROR, data, msg)
         }
     }
 
     enum class Status {
         SUCCESS,
         LOADING,
-        FAILED
+        ERROR
     }
 }

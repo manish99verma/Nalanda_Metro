@@ -1,15 +1,22 @@
 package com.manish.nalandametro.utils
 
 import android.content.Context
+import android.content.Intent
+import android.os.Build
 import android.view.View
+import android.view.View.MeasureSpec
 import android.view.inputmethod.InputMethodManager
+import android.widget.ListView
 import com.manish.nalandametro.data.model.MapPoint
+import java.io.Serializable
 import java.util.UUID
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.pow
+import kotlin.math.roundToInt
 import kotlin.math.sin
 import kotlin.math.sqrt
+
 
 object Utils {
     fun randomStringId() = UUID.randomUUID().toString()
@@ -33,7 +40,7 @@ object Utils {
         return sqrt(distance)
     }
 
-     fun showKeyboard(view: View, context: Context) {
+    fun showKeyboard(view: View, context: Context) {
         val inputMethodManager =
             context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.toggleSoftInputFromWindow(
@@ -42,4 +49,32 @@ object Utils {
         )
     }
 
+    fun <T : Serializable?> Intent.getSerializable(key: String, m_class: Class<T>): T {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+            this.getSerializableExtra(key, m_class)!!
+        else
+            this.getSerializableExtra(key) as T
+    }
+
+    fun setListViewHeightBasedOnChildren(listView: ListView) {
+        val listAdapter = listView.adapter
+            ?: // pre-condition
+            return
+        var totalHeight = 0
+        val desiredWidth = MeasureSpec.makeMeasureSpec(listView.width, MeasureSpec.AT_MOST)
+        for (i in 0 until listAdapter.count) {
+            val listItem = listAdapter.getView(i, null, listView)
+            listItem.measure(desiredWidth, MeasureSpec.UNSPECIFIED)
+            totalHeight += listItem.measuredHeight
+        }
+        val params = listView.layoutParams
+        params.height = totalHeight + listView.dividerHeight * (listAdapter.count - 1)
+
+        listView.layoutParams = params
+        listView.requestLayout()
+    }
+
+    fun convertDistanceToKM(inMeters: Double): Double {
+        return ((inMeters / 1000) * 10.0).roundToInt() / 10.0
+    }
 }
