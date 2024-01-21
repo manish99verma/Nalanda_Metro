@@ -1,6 +1,5 @@
 package com.manish.nalandametro.ui
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,7 +13,7 @@ import com.manish.nalandametro.utils.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class JourneyViewMode() : ViewModel() {
+class JourneyViewModel() : ViewModel() {
     private var metroGraph: Graph? = null
 
     private val _filterStationsResult = MutableLiveData<Event<List<String>>>()
@@ -48,7 +47,7 @@ class JourneyViewMode() : ViewModel() {
         to: String,
         pathType: MetroGraph.PathType
     ) {
-        if (from.isEmpty())
+        if (from.isEmpty()) {
             liveData.postValue(
                 Event(
                     Resource.error(
@@ -57,8 +56,10 @@ class JourneyViewMode() : ViewModel() {
                     )
                 )
             )
+            return
+        }
 
-        if (to.isEmpty())
+        if (to.isEmpty()) {
             liveData.postValue(
                 Event(
                     Resource.error(
@@ -67,6 +68,8 @@ class JourneyViewMode() : ViewModel() {
                     )
                 )
             )
+            return
+        }
 
         viewModelScope.launch {
             if (metroGraph == null) {

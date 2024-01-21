@@ -24,7 +24,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class JourneyActivity : AppCompatActivity() {
     private lateinit var binding: ActivityJourneyBinding
-    private lateinit var viewModel: JourneyViewMode
+    private lateinit var viewModel: JourneyViewModel
     private var receiverListView: ListView? = null
     private var senderEditText: EditText? = null
 
@@ -34,7 +34,7 @@ class JourneyActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         //Set up viewmodel
-        viewModel = ViewModelProvider(this)[JourneyViewMode::class.java]
+        viewModel = ViewModelProvider(this)[JourneyViewModel::class.java]
         val graphData = intent.getSerializable("graph_data", GraphData::class.java)
         viewModel.setUpGraph(graphData)
 
