@@ -27,9 +27,10 @@ class CitySearchManager(private val cities: List<String>) {
     }
 
     fun filterCities(query: String, limitToTop: Int): List<String> {
-        if (query.isEmpty() || cities.isEmpty())
-            return emptyList()
+        val result = mutableListOf<String>()
 
+        if (cities.isEmpty() || query.isEmpty())
+            return result
 
         var curr = root
         for (c in query) {
@@ -43,7 +44,6 @@ class CitySearchManager(private val cities: List<String>) {
             curr = curr.children[ch]!!
         }
 
-        val result = mutableListOf<String>()
         addAllCities(result, curr, limitToTop)
         return result
     }

@@ -140,7 +140,7 @@ class MetroGraph(private var data: GraphData) : Graph {
                     pathList.reversed(),
                     curr.distance,
                     curr.cost,
-                    curr.stops
+                    curr.stops - 1
                 )
             }
 

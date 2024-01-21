@@ -6,6 +6,7 @@
 
     <color name="main_app_color">#FF0A29</color>
     <color name="toolbar_bg">#ECECEC</color>
+    <color name="toolbar_bg_transparent">#4D020202</color>
     <color name="edt_txt_bg_border_color">#707070</color>
     <color name="btn_bg_start_color">#FF0A29</color>
     <color name="btn_bg_end_color">#BD182D</color>

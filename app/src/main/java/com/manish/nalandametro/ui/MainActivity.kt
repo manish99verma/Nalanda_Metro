@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.snackbar.Snackbar
 import com.manish.nalandametro.BuildConfig
 import com.manish.nalandametro.R
 import com.manish.nalandametro.data.model.GraphData
@@ -39,6 +40,7 @@ class MainActivity : AppCompatActivity() {
     private val stationToOverLayItemMap = mutableMapOf<String, OverlayItem>()
     private var stationsOverlay: ItemizedOverlayWithFocus<OverlayItem>? = null
     private var centerCity = "Bihar Sharif"
+    private var errorSnackBar: Snackbar? = null
 
     @Inject
     lateinit var prefManager: PrefManager
@@ -51,20 +53,19 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
-
+        //Fetching data
         viewModel.getGraphDataFromWeb()
         viewModel.getGraphDataResult().observe(this) {
             Log.d("TAGY", "onCreate: receivedData: ${it.status}, ${it.data}")
 
             if (it.status == Resource.Status.SUCCESS && it.data != null) {
+                errorSnackBar?.dismiss()
                 viewModel.setUpGraph(it.data)
                 refreshMapItems(viewModel.getCurrGraphData())
             } else if (it.status == Resource.Status.ERROR) {
-                Toast.makeText(this@MainActivity, it.msg, Toast.LENGTH_SHORT)
-                    .show()
+                showRetrySnackBar(it.msg)
             }
         }
-
         /*        viewModel.updateWithTestData()
                 viewModel.updateWithCustomDataResult().observe(this){
                     Log.d("TAGY", "onCreate: updatedData: ${it.status}, ${it.data}")
@@ -128,6 +129,20 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun showRetrySnackBar(msg: String?) {
+        val msgToShow = msg ?: getString(R.string.unknown_error_msg)
+
+        errorSnackBar = Snackbar.make(binding.root, msgToShow, Snackbar.LENGTH_INDEFINITE)
+            .setAction("Retry") {
+                if (Utils.isConnectedToInternet(this@MainActivity))
+                    viewModel.getGraphDataFromWeb()
+                else
+                    showRetrySnackBar(getString(R.string.no_internet_error_msg))
+            }
+
+        errorSnackBar?.show()
+    }
+
     private fun setUpSearchListView(list: List<String>?) {
         Log.d("TAGY", "setUpSearchListView: $list")
 
@@ -184,7 +199,7 @@ class MainActivity : AppCompatActivity() {
         //List routes
         val lines = mutableListOf<Polyline>()
         stationToOverLayItemMap.clear()
-        val trainDrawable = ResourcesCompat.getDrawable(resources, R.drawable.train__1_, null)
+        val trainDrawable = ResourcesCompat.getDrawable(resources, R.drawable.ic_station, null)
 
         graphData.map.forEach { i ->
             //Station

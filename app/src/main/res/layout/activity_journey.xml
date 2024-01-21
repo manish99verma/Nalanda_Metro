@@ -10,6 +10,7 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:id="@+id/tool_bar_card"
         app:cardElevation="0dp">
 
         <LinearLayout
@@ -42,23 +43,25 @@
     </androidx.cardview.widget.CardView>
 
     <ScrollView
+        android:id="@+id/scroll_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="12dp">
+        android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <EditText
+                app:layout_goneMarginTop="10dp"
                 android:id="@+id/edt_start_station"
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 android:layout_marginHorizontal="20dp"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/edt_bg"
-                android:hint="Start Station"
+                android:hint="@string/start_station_hint"
                 android:paddingHorizontal="20dp"
+                android:inputType="textFilter"
                 android:textColor="@color/black"
                 android:textSize="19sp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -83,8 +86,9 @@
                 android:layout_height="50dp"
                 android:layout_marginHorizontal="20dp"
                 android:layout_marginTop="12dp"
+                android:inputType="textFilter"
                 android:background="@drawable/edt_bg"
-                android:hint="End Station"
+                android:hint="@string/end_station_hint"
                 android:paddingHorizontal="20dp"
                 android:textColor="@color/black"
                 android:textSize="19sp"
@@ -111,7 +115,11 @@
                 android:layout_marginTop="16dp"
                 android:background="@drawable/btn_bg"
                 android:fontFamily="@font/nunito_semibold"
-                android:text="Get route"
+                android:text="@string/get_route_btn_txt"
+                android:clickable="true"
+                android:focusable="true"
+                android:elevation="3dp"
+                android:foreground="?android:attr/selectableItemBackground"
                 android:textAllCaps="false"
                 android:textColor="@color/white"
                 android:textSize="18sp"
@@ -142,7 +150,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Shortest Path"
+                        android:text="@string/shortest_path_title_txt"
                         android:textSize="18sp"
                         android:textStyle="bold" />
 
@@ -167,7 +175,6 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/nunito_semibold"
-                                android:text="Giriak(GR) - Raitar(RT) - Pawapuri(PW)"
                                 android:textColor="@color/black"
                                 android:textSize="15sp" />
 
@@ -182,7 +189,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="@font/nunito_semibold"
-                                    android:text="Distance:"
+                                    android:text="@string/distance_title_txt"
                                     android:textColor="@color/black"
                                     android:textSize="16sp" />
 
@@ -191,7 +198,6 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="20dp"
-                                    android:text="5 KM"
                                     android:textColor="@color/card_txt_regular_color"
                                     android:textSize="14sp" />
                             </LinearLayout>
@@ -207,7 +213,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="@font/nunito_semibold"
-                                    android:text="Cost:       "
+                                    android:text="@string/cost_title_txt"
                                     android:textColor="@color/black"
                                     android:textSize="16sp" />
 
@@ -216,7 +222,6 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="20dp"
-                                    android:text="Rs 10"
                                     android:textColor="@color/card_txt_regular_color"
                                     android:textSize="14sp" />
                             </LinearLayout>
@@ -232,7 +237,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="@font/nunito_semibold"
-                                    android:text="Stops:     "
+                                    android:text="@string/stops_title_txt"
                                     android:textColor="@color/black"
                                     android:textSize="16sp" />
 
@@ -241,7 +246,6 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="20dp"
-                                    android:text="1"
                                     android:textColor="@color/card_txt_regular_color"
                                     android:textSize="14sp" />
                             </LinearLayout>
@@ -262,7 +266,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Cheapest Path"
+                        android:text="@string/cheapest_path_title_txt"
                         android:textSize="18sp"
                         android:textStyle="bold" />
 
@@ -287,7 +291,6 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/nunito_semibold"
-                                android:text="Giriak(GR) - Raitar(RT) - Pawapuri(PW)"
                                 android:textColor="@color/black"
                                 android:textSize="15sp" />
 
@@ -302,7 +305,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="@font/nunito_semibold"
-                                    android:text="Distance:"
+                                    android:text="@string/distance_title_txt"
                                     android:textColor="@color/black"
                                     android:textSize="16sp" />
 
@@ -311,7 +314,6 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="20dp"
-                                    android:text="5 KM"
                                     android:textColor="@color/card_txt_regular_color"
                                     android:textSize="14sp" />
                             </LinearLayout>
@@ -327,7 +329,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="@font/nunito_semibold"
-                                    android:text="Cost:       "
+                                    android:text="@string/cost_title_txt"
                                     android:textColor="@color/black"
                                     android:textSize="16sp" />
 
@@ -336,7 +338,6 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="20dp"
-                                    android:text="Rs 10"
                                     android:textColor="@color/card_txt_regular_color"
                                     android:textSize="14sp" />
                             </LinearLayout>
@@ -352,7 +353,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="@font/nunito_semibold"
-                                    android:text="Stops:     "
+                                    android:text="@string/stops_title_txt"
                                     android:textColor="@color/black"
                                     android:textSize="16sp" />
 
@@ -361,7 +362,6 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="20dp"
-                                    android:text="1"
                                     android:textColor="@color/card_txt_regular_color"
                                     android:textSize="14sp" />
                             </LinearLayout>

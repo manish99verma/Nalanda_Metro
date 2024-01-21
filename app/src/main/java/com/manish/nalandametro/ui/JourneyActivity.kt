@@ -1,7 +1,5 @@
 package com.manish.nalandametro.ui
 
-import android.opengl.Visibility
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -10,21 +8,25 @@ import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.ListView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModelProvider
 import com.manish.nalandametro.data.model.GraphData
 import com.manish.nalandametro.databinding.ActivityJourneyBinding
 import com.manish.nalandametro.utils.Resource
+import com.manish.nalandametro.utils.Utils
 import com.manish.nalandametro.utils.Utils.convertDistanceToKM
 import com.manish.nalandametro.utils.Utils.getSerializable
 import com.manish.nalandametro.utils.Utils.setListViewHeightBasedOnChildren
 import dagger.hilt.android.AndroidEntryPoint
-import java.lang.StringBuilder
+
 
 @AndroidEntryPoint
 class JourneyActivity : AppCompatActivity() {
     private lateinit var binding: ActivityJourneyBinding
     private lateinit var viewModel: JourneyViewMode
+    private var receiverListView: ListView? = null
+    private var senderEditText: EditText? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,50 +40,48 @@ class JourneyActivity : AppCompatActivity() {
 
         // Back btn
         binding.btnBack.setOnClickListener {
-            finish()
+            onBackPressed()
         }
 
         // Suggestion station
-        lateinit var receiverListView: ListView
-        lateinit var senderEditText: EditText
-
         binding.edtStartStation.addTextChangedListener {
             receiverListView = binding.listViewStart
             senderEditText = binding.edtStartStation
 
-            if (it != null)
+            if (senderEditText!!.isFocused && it != null)
                 viewModel.filterStations(it.toString(), true, 3)
             else
-                setUpSearchListView(null, receiverListView, senderEditText)
+                clearSuggestions()
         }
 
         binding.edtEndStation.addTextChangedListener {
             receiverListView = binding.listViewEnd
             senderEditText = binding.edtEndStation
 
-            if (it != null)
+            if (senderEditText!!.isFocused && it != null)
                 viewModel.filterStations(it.toString(), true, 3)
             else
-                setUpSearchListView(null, receiverListView, senderEditText)
+                clearSuggestions()
         }
 
         viewModel.getFilterStationResult().observe(this) { event ->
-            if (senderEditText.isFocused)
-                setUpSearchListView(
-                    event.getContentIfNotHandled(),
-                    receiverListView,
-                    senderEditText
-                )
-            else
-                setUpSearchListView(null, receiverListView, senderEditText)
+            setUpSearchListView(event.getContentIfNotHandled())
         }
 
         // Get Route
         getRoutesSetUp()
+
+        //Scroll Listener
+        binding.scrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+            Log.d("TAGY", "onCreate: $scrollX, $scrollY,$oldScrollX,$oldScrollY")
+            binding.toolBarCard.cardElevation = if (scrollY > 10) 6f else 0f
+        }
     }
 
-    private fun setUpSearchListView(list: List<String>?, listView: ListView, editText: EditText) {
+    private fun setUpSearchListView(list: List<String>?) {
         Log.d("TAGY", "setUpSearchListView: $list")
+        val listView = receiverListView ?: return
+        val editText = senderEditText ?: return
 
         if (list.isNullOrEmpty()) {
             listView.adapter = null
@@ -94,25 +94,28 @@ class JourneyActivity : AppCompatActivity() {
 
         listView.visibility = View.VISIBLE
         listView.adapter = adapter
-        setListViewHeightBasedOnChildren(listView)
-        listView.onItemClickListener = object : AdapterView.OnItemClickListener {
-            override fun onItemClick(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                editText.clearFocus()
+        listView.onItemClickListener =
+            AdapterView.OnItemClickListener { _, _, position, _ ->
+                clearSuggestions()
                 editText.setText(list[position])
-                listView.adapter = null
-                listView.visibility = View.GONE
             }
-        }
 
+        listView.post {
+            setListViewHeightBasedOnChildren(listView)
+        }
+    }
+
+    private fun clearSuggestions() {
+        senderEditText?.clearFocus()
+        receiverListView?.adapter = null
+        receiverListView?.visibility = View.GONE
     }
 
     private fun getRoutesSetUp() {
         binding.btnGetRoute.setOnClickListener {
+            Utils.hideKeyboard(this@JourneyActivity, binding.root)
+            clearSuggestions()
+
             val st1 = binding.edtStartStation.text.toString()
             val st2 = binding.edtEndStation.text.toString()
 

@@ -1,12 +1,15 @@
 package com.manish.nalandametro.utils
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
 import android.os.Build
 import android.view.View
 import android.view.View.MeasureSpec
 import android.view.inputmethod.InputMethodManager
 import android.widget.ListView
+import androidx.appcompat.app.AppCompatActivity
 import com.manish.nalandametro.data.model.MapPoint
 import java.io.Serializable
 import java.util.UUID
@@ -76,5 +79,17 @@ object Utils {
 
     fun convertDistanceToKM(inMeters: Double): Double {
         return ((inMeters / 1000) * 10.0).roundToInt() / 10.0
+    }
+
+    fun isConnectedToInternet(context: Context): Boolean {
+        val cm =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val netInfo = cm.activeNetworkInfo
+        return netInfo != null && netInfo.isConnectedOrConnecting
+    }
+
+    fun hideKeyboard(activity: Activity,root:View) {
+        val imm = activity.getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(root.applicationWindowToken, 0)
     }
 }

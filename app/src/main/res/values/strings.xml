@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Nalanda Metro</string>
+    <string name="no_internet_error_msg">Please check you internet or wifi!</string>
+    <string name="unknown_error_msg">Unknown error occurred</string>
+    <string name="start_station_hint">Start Station</string>
+    <string name="end_station_hint">End Station</string>
+    <string name="get_route_btn_txt">Get route</string>
+    <string name="shortest_path_title_txt">Shortest Path</string>
+    <string name="distance_title_txt">Distance:</string>
+    <string name="cost_title_txt">Cost:</string>
+    <string name="stops_title_txt">Stops:</string>
+    <string name="cheapest_path_title_txt">Cheapest Path</string>
 </resources>
